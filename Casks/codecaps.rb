@@ -5,7 +5,7 @@ cask "codecaps" do
   url "https://github.com/jaywedgeworth22/codecaps/releases/download/v#{version}/CodeCaps.dmg"
   name "CodeCaps"
   desc "Menu bar monitor for AI quotas and subscription plans"
-  homepage "https://jaywedgeworth22.github.io/codecaps/"
+  homepage "https://codecaps.simplewithus.com/"
 
   livecheck do
     url :url
