@@ -13,12 +13,12 @@ on:
     types: [completed]
 
 permissions: {}
-concurrency:
-  group: kody-caller-${{ github.repository_id }}-${{ github.event.check_run.pull_requests[0].number || github.event.check_run.id }}
-  cancel-in-progress: false
 
 jobs:
   propose:
+    # Job-level only.  Workflow concurrency is assigned before this `if`, so an
+    # unrelated check_run completion on the same pull request would share the
+    # group and cancel a still-pending Kody run.
     if: >-
       vars.SWU_KODY_AUTOFIX_ENABLED == 'true' &&
       github.event_name == 'check_run' && github.event.action == 'completed' &&
@@ -29,6 +29,9 @@ jobs:
       github.event.check_run.conclusion == 'success' &&
       github.event.check_run.pull_requests[0].number != null &&
       github.event.check_run.pull_requests[1] == null
+    concurrency:
+      group: kody-caller-${{ github.repository_id }}-${{ github.event.check_run.pull_requests[0].number || github.event.check_run.id }}
+      cancel-in-progress: false
     permissions:
       contents: write
       pull-requests: write
