@@ -10,7 +10,8 @@ EXPECTED = {"kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "clau
 
 class AutofixContractTests(unittest.TestCase):
     def test_verified_reusable_pin(self):
-        self.assertIn("pr-autofix-reusable.yml@" + PIN_FIXTURE, WORKFLOW)
+        pins = re.findall(r"^    uses: Simple-With-Us/AI-Fleet-Coordinator/\.github/workflows/pr-autofix-reusable\.yml@([0-9a-f]{40})$", WORKFLOW, re.M)
+        self.assertEqual(pins, [PIN_FIXTURE])
 
     def test_only_existing_actors_and_exact_sentry_aliases(self):
         matches = re.findall(r'^      allowed_bots: "([^"]+)"$', WORKFLOW, re.M)
