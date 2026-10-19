@@ -26,3 +26,5 @@ jobs:
             echo "--- $f"
             ruby -c "$f"
           done
+      - name: PR Autofix caller contract
+        run: python3 scripts/test_autofix_contract.py
