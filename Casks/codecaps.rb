@@ -2,7 +2,7 @@ cask "codecaps" do
   version "1.1.0"
   sha256 "ef40d2f74f6887ee2d79d54160849686c1d60c5b7046ba5ae45c2be89c51f4d1"
 
-  url "https://github.com/jaywedgeworth22/codecaps/releases/download/v#{version}/CodeCaps.dmg"
+  url "https://github.com/Simple-With-Us/CodeCaps/releases/download/v#{version}/CodeCaps.dmg"
   name "CodeCaps"
   desc "Menu bar monitor for AI quotas and subscription plans"
   homepage "https://codecaps.simplewithus.com/"
