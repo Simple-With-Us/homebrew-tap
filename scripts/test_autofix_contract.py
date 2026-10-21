@@ -5,6 +5,8 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WORKFLOW = (ROOT / ".github/workflows/autofix.yml").read_text()
+KODY_WORKFLOW = (ROOT / ".github/workflows/kody-fleet-autofix.yml").read_text()
+SHARED_GROUP_PREFIX = "group: pr-autofix-${{ github.repository }}-"
 PIN_FIXTURE = "00def8545947e21ffe285ea67c1812c7bd321dfc"  # public commit SHA, not a secret
 EXPECTED = {"kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]"}
 
@@ -25,6 +27,14 @@ class AutofixContractTests(unittest.TestCase):
     def test_human_events_still_require_bot_type(self):
         self.assertIn('contains(fromJSON(\'["bot", "Bot"]\')', WORKFLOW)
         self.assertNotIn("pull_request_target:", WORKFLOW)
+
+    def test_kody_caller_shares_the_pr_autofix_concurrency_group(self):
+        expected = SHARED_GROUP_PREFIX + "${{ github.event.check_run.pull_requests[0].number || github.event.check_run.id }}"
+        self.assertIn(expected, KODY_WORKFLOW)
+        self.assertIn("cancel-in-progress: false", KODY_WORKFLOW)
+        self.assertIn(SHARED_GROUP_PREFIX, WORKFLOW)
+        self.assertNotIn("kody-caller-", KODY_WORKFLOW)
+        self.assertNotIn("github.repository_id", KODY_WORKFLOW)
 
     def test_existing_serialization_and_permissions(self):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
