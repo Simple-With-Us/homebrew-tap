@@ -5,7 +5,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WORKFLOW = (ROOT / ".github/workflows/autofix.yml").read_text()
-PIN_FIXTURE = "a652e46755412be2201a2f406e50a422c1376b4c"  # public commit SHA, not a secret
+PIN_FIXTURE = "c97a2dae96762eb9ffc122c753f0dfb0a7840650"  # public commit SHA, not a secret
 EXPECTED = {"kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]"}
 
 class AutofixContractTests(unittest.TestCase):
