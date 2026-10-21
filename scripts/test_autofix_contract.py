@@ -33,9 +33,13 @@ class AutofixContractTests(unittest.TestCase):
         self.assertIn(expected, KODY_WORKFLOW)
         self.assertIn("cancel-in-progress: false", KODY_WORKFLOW)
         self.assertIn(SHARED_GROUP_PREFIX, WORKFLOW)
-        kody_group = next(line for line in KODY_WORKFLOW.splitlines() if line.strip().startswith("group:"))
-        self.assertNotIn("kody-caller-", kody_group)
-        self.assertNotIn("github.repository_id", kody_group)
+        kody_groups = [line.strip() for line in KODY_WORKFLOW.splitlines() if line.strip().startswith("group:")]
+        self.assertTrue(kody_groups, "kody-fleet-autofix.yml must declare a concurrency group")
+        self.assertEqual(kody_groups[0], expected)
+        for kody_group in kody_groups:
+            self.assertNotIn("kody-caller-", kody_group)
+            self.assertNotIn("github.repository_id", kody_group)
+        self.assertNotIn("kody-caller-", KODY_WORKFLOW)
 
     def test_existing_serialization_and_permissions(self):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
