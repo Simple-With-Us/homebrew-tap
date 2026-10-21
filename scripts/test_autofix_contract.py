@@ -5,7 +5,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WORKFLOW = (ROOT / ".github/workflows/autofix.yml").read_text()
-PIN_FIXTURE = "00def8545947e21ffe285ea67c1812c7bd321dfc"  # public commit SHA, not a secret
+PIN_FIXTURE = "a652e46755412be2201a2f406e50a422c1376b4c"  # public commit SHA, not a secret
 EXPECTED = {"kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]"}
 
 class AutofixContractTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class AutofixContractTests(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
         self.assertIn("group: pr-autofix-", WORKFLOW)
         self.assertIn("permissions: {}", WORKFLOW)
-        self.assertIn("      contents: write\n      pull-requests: read\n      actions: read", WORKFLOW)
+        self.assertIn("      contents: write\n      pull-requests: read\n      issues: write\n      actions: read", WORKFLOW)
 
 if __name__ == "__main__":
     unittest.main()
