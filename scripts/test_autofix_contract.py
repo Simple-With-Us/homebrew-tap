@@ -9,7 +9,7 @@ KODY_WORKFLOW = (ROOT / ".github/workflows/kody-fleet-autofix.yml").read_text()
 SHARED_GROUP_PREFIX = "group: pr-autofix-${{ github.repository }}-"
 AUTOFIX_GROUP_SUFFIX = "${{ github.event.issue.number || github.event.pull_request.number }}"
 KODY_GROUP_SUFFIX = "${{ github.event.check_run.pull_requests[0].number || github.event.check_run.id }}"
-PIN_FIXTURE = "c97a2dae96762eb9ffc122c753f0dfb0a7840650"  # public commit SHA, not a secret
+PIN_FIXTURE = "a4c48f013a2108be517ee933dccb1b37e9403920"  # public commit SHA, not a secret
 EXPECTED = {"kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]"}
 
 class AutofixContractTests(unittest.TestCase):
