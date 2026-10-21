@@ -18,7 +18,10 @@ jobs:
   propose:
     # Job-level only.  Workflow concurrency is assigned before this `if`, so an
     # unrelated check_run completion on the same pull request would share the
-    # group and cancel a still-pending Kody run.
+    # group and cancel a still-pending Kody run.  Latest wins inside the shared
+    # pr-autofix group: cancel-in-progress false protects only the running run,
+    # so a newer run supersedes a queued one instead of queueing behind it.
+    # Re-request from a review comment to run it again.
     if: >-
       vars.SWU_KODY_AUTOFIX_ENABLED == 'true' &&
       github.event_name == 'check_run' && github.event.action == 'completed' &&
