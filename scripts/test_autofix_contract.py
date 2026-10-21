@@ -5,7 +5,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WORKFLOW = (ROOT / ".github/workflows/autofix.yml").read_text()
-PIN_FIXTURE = "00def8545947e21ffe285ea67c1812c7bd321dfc"  # public commit SHA, not a secret
+PIN_FIXTURE = "c97a2dae96762eb9ffc122c753f0dfb0a7840650"  # public commit SHA, not a secret
 EXPECTED = {
     "kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]",
     "swu-ag[bot]", "swu-bf-builder[bot]", "swu-bf-compiler[bot]", "swu-bf-designer[bot]",
@@ -49,11 +49,17 @@ class AutofixContractTests(unittest.TestCase):
         self.assertIn("github.event_name != 'issue_comment'", WORKFLOW)
         self.assertIn("contains(github.event.comment.body, '/autofix')", WORKFLOW)
 
+    def test_trusted_policy_pins_model_and_budget(self):
+        policy = (ROOT / ".github/pr-autofix-trusted.yml").read_text()
+        self.assertIn("model: MiniMax-M3.1-Flash\n", policy)
+        self.assertIn("max_turns: 60\n", policy)
+        self.assertIn("max_iterations: 5\n", policy)
+
     def test_existing_serialization_and_permissions(self):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
         self.assertIn("group: pr-autofix-", WORKFLOW)
         self.assertIn("permissions: {}", WORKFLOW)
-        self.assertIn("      contents: write\n      pull-requests: read\n      actions: read", WORKFLOW)
+        self.assertIn("      contents: write\n      pull-requests: read\n      issues: write\n      actions: read", WORKFLOW)
 
 if __name__ == "__main__":
     unittest.main()
