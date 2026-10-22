@@ -5,7 +5,11 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WORKFLOW = (ROOT / ".github/workflows/autofix.yml").read_text()
-PIN_FIXTURE = "c97a2dae96762eb9ffc122c753f0dfb0a7840650"  # public commit SHA, not a secret
+KODY_WORKFLOW = (ROOT / ".github/workflows/kody-fleet-autofix.yml").read_text()
+SHARED_GROUP_PREFIX = "group: pr-autofix-${{ github.repository }}-"
+AUTOFIX_GROUP_SUFFIX = "${{ github.event.issue.number || github.event.pull_request.number }}"
+KODY_GROUP_SUFFIX = "${{ github.event.check_run.pull_requests[0].number || github.event.check_run.id }}"
+PIN_FIXTURE = "a4c48f013a2108be517ee933dccb1b37e9403920"  # public commit SHA, not a secret
 EXPECTED = {
     "kody-ai[bot]", "chatgpt-codex-connector[bot]", "cursor[bot]", "claude[bot]", "sentry", "sentry[bot]",
     "swu-ag[bot]", "swu-bf-builder[bot]", "swu-bf-compiler[bot]", "swu-bf-designer[bot]",
@@ -54,6 +58,25 @@ class AutofixContractTests(unittest.TestCase):
         self.assertIn("model: MiniMax-M3.1-Flash\n", policy)
         self.assertIn("max_turns: 60\n", policy)
         self.assertIn("max_iterations: 5\n", policy)
+
+    def test_kody_caller_shares_the_pr_autofix_concurrency_group(self):
+        expected = SHARED_GROUP_PREFIX + KODY_GROUP_SUFFIX
+        self.assertIn(expected, KODY_WORKFLOW)
+        self.assertIn("cancel-in-progress: false", KODY_WORKFLOW)
+        # Pin the caller side of the shared key too: the PR-number suffix is
+        # what makes both groups resolve to the same pull request.
+        self.assertIn(SHARED_GROUP_PREFIX + AUTOFIX_GROUP_SUFFIX, WORKFLOW)
+        kody_groups = [line.strip() for line in KODY_WORKFLOW.splitlines() if line.strip().startswith("group:")]
+        self.assertTrue(kody_groups, "kody-fleet-autofix.yml must declare a concurrency group")
+        self.assertEqual(kody_groups[0], expected)
+        # The shared group must sit under the job-level concurrency block: a
+        # top-level (two-space) group would serialize the whole workflow.
+        job_level_groups = [line for line in KODY_WORKFLOW.splitlines() if line.startswith("      group:")]
+        self.assertEqual(job_level_groups, ["      " + expected])
+        for kody_group in kody_groups:
+            self.assertNotIn("kody-caller-", kody_group)
+            self.assertNotIn("github.repository_id", kody_group)
+        self.assertNotIn("kody-caller-", KODY_WORKFLOW)
 
     def test_existing_serialization_and_permissions(self):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
