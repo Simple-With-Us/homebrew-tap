@@ -18,7 +18,8 @@ jobs:
   autofix:
     if: >
       (github.event.issue.pull_request || github.event.pull_request) &&
-      contains(fromJSON('["bot", "Bot"]'), github.event.comment.user.type || github.event.review.user.type || '')
+      contains(fromJSON('["bot", "Bot"]'), github.event.comment.user.type || github.event.review.user.type || '') &&
+      (github.event_name != 'issue_comment' || contains(github.event.comment.body, '/autofix'))
     permissions:
       contents: write
       pull-requests: read
@@ -26,7 +27,7 @@ jobs:
       actions: read
     uses: Simple-With-Us/AI-Fleet-Coordinator/.github/workflows/pr-autofix-reusable.yml@a4c48f013a2108be517ee933dccb1b37e9403920
     with:
-      allowed_bots: "kody-ai[bot],chatgpt-codex-connector[bot],cursor[bot],claude[bot],sentry,sentry[bot]"
+      allowed_bots: "kody-ai[bot],chatgpt-codex-connector[bot],cursor[bot],claude[bot],sentry,sentry[bot],swu-ag[bot],swu-bf-builder[bot],swu-bf-compiler[bot],swu-bf-designer[bot],swu-bf-director[bot],swu-bf-fixer[bot],swu-bf-housekeeper[bot],swu-bf-monitor[bot],swu-bf-oracle[bot],swu-bf-plumber[bot],swu-bf-publisher[bot],swu-claude[bot],swu-clutch[bot],swu-codex[bot],swu-cursor[bot],swu-cursor-cloud[bot],swu-fx[bot],swu-gb-compiler[bot],swu-gb-designer[bot],swu-gb-director[bot],swu-gb-engineer[bot],swu-gb-fixer[bot],swu-gb-housekeeper[bot],swu-gb-monitor[bot],swu-gb-oracle[bot],swu-gb-plumber[bot],swu-gb-publisher[bot],swu-grok-build[bot],swu-jet[bot],swu-minimax[bot],swu-opencode[bot],swu-operator[bot],swu-rob[bot],swu-wise[bot]"
     secrets:
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
       META_MODEL_API_TOKEN: ${{ secrets.META_MODEL_API_TOKEN }}
