@@ -82,7 +82,18 @@ class AutofixContractTests(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", WORKFLOW)
         self.assertIn("group: pr-autofix-", WORKFLOW)
         self.assertIn("permissions: {}", WORKFLOW)
-        self.assertIn("      contents: write\n      pull-requests: read\n      issues: write\n      actions: read", WORKFLOW)
+        # Compare the complete parsed scope set, not contiguous text: a
+        # scope appended after `actions: read` must fail this test.
+        blocks = re.findall(
+            r"^    permissions:\n((?:      [a-z0-9-]+: (?:read|write)\n)+)",
+            WORKFLOW, re.M)
+        self.assertEqual(
+            len(blocks), 1, "autofix job must declare exactly one permissions block")
+        scopes = dict(line.strip().split(": ") for line in blocks[0].splitlines())
+        self.assertEqual(
+            scopes,
+            {"contents": "write", "pull-requests": "read",
+             "issues": "write", "actions": "read"})
 
 if __name__ == "__main__":
     unittest.main()
