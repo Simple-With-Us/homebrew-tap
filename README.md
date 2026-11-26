@@ -1,3 +1,5 @@
+<p><img src="https://raw.githubusercontent.com/Simple-With-Us/Simple-With-Us/main/assets/logos/swu-logo.png" alt="Simple With Us logo" width="96" height="96"></p>
+
 # Homebrew Tap
 
 Casks for Jay Wedgeworth's Mac apps.
